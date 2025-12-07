@@ -1,24 +1,19 @@
-pipeline {
+pipeline{
     agent any
-
-    environment {
-        DOCKER_HUB_REPO = "durga83125/durga83125"
-        IMAGE_TAG = "latest"
+    environment{
+        DOCKER_HUB_REPO="durga83125/durga83125"
+        IMAGE_TAG="lastest"
     }
-
-    stages {
-
-        stage('Checkout Code') {
-            steps {
-                git url: 'https://github.com/Durgarao101/real-project.git', branch: 'main'
+    stages{
+        stage('Checkout the code from Github Repository'){
+            steps{
+                https://github.com/Durgarao101/real-project.git
             }
         }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    echo "Building Docker Image: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
-                    docker.build("${DOCKER_HUB_REPO}:${IMAGE_TAG}")
+        stage('Bulid Docker Image'){
+            steps{
+                echo "Building Docker Image: ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}"
+                    docker.build("${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}")
                 }
             }
         }
@@ -28,24 +23,10 @@ pipeline {
                 script {
                     echo "Pushing image to Docker Hub..."
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        def img = docker.image("${DOCKER_HUB_REPO}:${IMAGE_TAG}")
-                        img.push()
-                        img.push("latest")
+                        docker.image("${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}").push()
                     }
                 }
             }
         }
     }
 
-    post {
-        always {
-            sh 'docker system prune -f || true'
-        }
-        success {
-            echo "Pipeline executed successfully!"
-        }
-        failure {
-            echo "Pipeline failed. Please check logs."
-        }
-    }
-}
