@@ -1,19 +1,25 @@
-pipeline{
+pipeline {
     agent any
-    environment{
-        DOCKER_HUB_REPO="durga83125/durga83125"
-        IMAGE_TAG="lastest"
+
+    environment {
+        DOCKER_HUB_REPO = "durga83125/durga83125"
+        IMAGE_TAG = "latest"
     }
-    stages{
-        stage('Checkout the code from Github Repository'){
-            steps{
-                https://github.com/Durgarao101/real-project.git
+
+    stages {
+
+        stage('Checkout the code from Github Repository') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/Durgarao101/real-project.git'
             }
         }
-        stage('Bulid Docker Image'){
-            steps{
-                echo "Building Docker Image: ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}"
-                    docker.build("${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}")
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo "Building Docker Image: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+                    dockerImage = docker.build("${DOCKER_HUB_REPO}:${IMAGE_TAG}")
                 }
             }
         }
@@ -22,11 +28,12 @@ pipeline{
             steps {
                 script {
                     echo "Pushing image to Docker Hub..."
+
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        docker.image("${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}").push()
+                        dockerImage.push()
                     }
                 }
             }
         }
     }
-
+}
