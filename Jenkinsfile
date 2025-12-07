@@ -19,10 +19,7 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker Image: ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}"
-
-                    // Store docker image globally
-                    env.IMAGE_NAME = "${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}"
-                    app = docker.build(env.IMAGE_NAME)
+                    def app = docker.build("${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}")
                 }
             }
         }
@@ -31,9 +28,9 @@ pipeline {
             steps {
                 script {
                     echo "Pushing image to Docker Hub..."
-
                     docker.withRegistry("https://index.docker.io/v1/", "dockerhub-credentials") {
-                        app.push()   // now this works
+                        def app = docker.image("${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}")
+                        app.push()
                     }
                 }
             }
@@ -49,3 +46,4 @@ pipeline {
         }
     }
 }
+
