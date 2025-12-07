@@ -18,8 +18,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo "Building Docker Image: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
-                    dockerImage = docker.build("${DOCKER_HUB_REPO}:${IMAGE_TAG}")
+echo "Building Docker Image: ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}"
+                    docker.build("${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}")
                 }
             }
         }
@@ -29,10 +29,19 @@ pipeline {
                 script {
                     echo "Pushing image to Docker Hub..."
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        dockerImage.push()
+                        docker.image("${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}").push()
                     }
                 }
             }
         }
     }
+
+    post {
+        success {
+            echo "Pipeline executed successfully!"
+        }
+        failure {
+            echo "Pipeline failed. Please check logs."
+        }
+    }
 }
