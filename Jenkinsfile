@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_REPO = "durga83125/health-centre"
+        DOCKER_HUB_REPO = "durga83125/durga83125"
         IMAGE_TAG = "latest"
     }
 
