@@ -19,6 +19,8 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker Image: ${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}"
+                    
+                    // IMPORTANT: define 'app' inside script as a local variable
                     app = docker.build("${env.DOCKER_HUB_REPO}:${env.IMAGE_TAG}")
                 }
             }
@@ -29,7 +31,8 @@ pipeline {
                 script {
                     echo "Pushing image to Docker Hub..."
 
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                    docker.withRegistry("https://index.docker.io/v1/", "dockerhub-credentials") {
+                        // Push the image (tag already includes :latest)
                         app.push()
                     }
                 }
